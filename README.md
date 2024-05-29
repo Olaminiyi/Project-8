@@ -136,3 +136,31 @@ sudo systemctl restart apache2
 
 To verify that our configuration works, we try to access the load balancer's public IP address from the browser.
 
+![alt text](images/8.11.png)
+
+
+Then log in using the username and password we already set in the database i.e
+
+**"username: admin"**
+
+**"password: admin"**
+
+http://<Load-Balancer-Public-IP-Address-or-Public-DNS-Name>/index.php
+
+![alt text](images/8.12.png)
+
+
+Open two consoles for both Web Servers and run following command
+```
+sudo tail -f /var/log/httpd/access_log
+```
+
+![alt text](images/8.13.png)
+
+
+We refresh the browser page several times and make sure that both servers receive HTTP GET requests from the load balancer. New records will appear in each server’s log file. The number of requests to each server will be approximately the same since we set the loadfactor in the configuration (i.e., loadfactor=5 = 5) to the same value for both servers. This means that traffic will be distributed evenly between them.
+
+>[!NOTE] 
+> The `web01` and `web02` configurations are internal configurations, and they are also local to your load balancer server, these names will neither be'resolvable’ from other servers internally nor from the Internet.
+
+**We have just implemented a load-balancing web solution for our DevOps team.**
