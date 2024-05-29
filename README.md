@@ -160,7 +160,7 @@ sudo tail -f /var/log/httpd/access_log
 
 We refresh the browser page several times and make sure that both servers receive HTTP GET requests from the load balancer. New records will appear in each server’s log file. The number of requests to each server will be approximately the same since we set the loadfactor in the configuration (i.e., loadfactor=5 = 5) to the same value for both servers. This means that traffic will be distributed evenly between them.
 
-> [!NOTE] 
-> The `web01` and `web02` configurations are internal configurations, and they are also local to your load balancer server, these  names will neither be'resolvable’ from other servers internally nor from the Internet.
+>[!NOTE] 
+> The `web01` and `web02` configurations are internal configurations, and they are also local to your load balancer server, these names will neither be'resolvable’ from other servers internally nor from the Internet.
 
 **We have just implemented a load-balancing web solution for our DevOps team.**
