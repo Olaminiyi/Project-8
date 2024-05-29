@@ -50,7 +50,89 @@ Create an Ubuntu Server 20.04 EC2 instance
 
 ![alt text](images/8.3.png)
 
-Open `TCP port 80` on laod balancer by creating an Inbound Rule in Security Group.
+Open `TCP port 80` on load balancer by creating an Inbound Rule in Security Group.
 
 ![alt text](images/8.4.png)
+
+Install Apache Load Balancer on server and configure it to point traffic coming to load balancer to both Web Servers.
+```
+sudo apt update -y
+```
+```
+sudo apt install apache2 -y
+```
+```
+sudo apt-get install libxml2-dev
+```
+![alt text](images/8.5.png)
+![alt text](images/8.6.png)
+![alt text](images/8.7.png)
+
+
+Enable following modules
+```
+sudo a2enmod rewrite
+```
+```
+sudo a2enmod proxy
+```
+```
+sudo a2enmod proxy_balancer
+```
+```
+sudo a2enmod proxy_http
+```
+```
+sudo a2enmod headers
+```
+```
+sudo a2enmod lbmethod_bytraffic
+```
+
+![alt text](images/8.8.png)
+
+
+Start apache2 service and make sure it is up and running
+```
+sudo systemctl start apache2
+```
+```
+sudo systemctl status apache2
+```
+![alt text](images/8.9.png)
+
+### Configure load balancing
+
+Open **"/etc/apache2/sites-available/000-default.conf"**
+```
+sudo vi /etc/apache2/sites-available/000-default.conf
+```
+Add below configuration into this section <VirtualHost *:80> and <VirtualHost
+```
+<Proxy "balancer://mycluster">
+               BalancerMember http://<WebServer1-Private-IP-Address>:80 loadfactor=5 timeout=1
+               BalancerMember http://<WebServer2-Private-IP-Address>:80 loadfactor=5 timeout=1
+               ProxySet lbmethod=bytraffic
+               # ProxySet lbmethod=byrequests
+        </Proxy>
+
+        ProxyPreserveHost On
+        ProxyPass / balancer://mycluster/
+        ProxyPassReverse / balancer://mycluster/
+```
+
+We will replace the `private-IP-addresses` with the names we gave to the webservers earlier on i.e `web01` and `web02`.
+
+![alt text](images/8.10.png)
+
+**"ESC + wq = ENTER"** to save.
+
+Restart Apache service
+```
+sudo systemctl restart apache2
+```
+
+[bytraffic](https://httpd.apache.org/docs/2.4/mod/mod_lbmethod_bytraffic.html) balancing method will distribute incoming load between your Web Servers according to current traffic load. We can control in which proportion the traffic must be distributed by loadfactor parameter.
+
+To verify that our configuration works, we try to access the load balancer's public IP address from the browser.
 
